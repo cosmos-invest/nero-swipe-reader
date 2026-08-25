@@ -1,19 +1,16 @@
 {
   "name": "nero-swipe-reader",
   "private": true,
-  "version": "0.1.30",
-  "description": "Dedicated NERO Swipe Reader and Firefox Bridge",
+  "version": "0.1.31",
+  "description": "Dedicated NERO Swipe Reader with Firefox-local automation",
   "type": "module",
   "scripts": {
-    "check": "npm run materialize && node tests/safety-check.mjs && npm run check:automation",
+    "check": "npm run materialize && node tests/safety-check.mjs && npm run check:local-auto",
+    "check:local-auto": "node --check extension/local-auto.js && node tests/local-auto-check.mjs",
     "build:extension": "npm run materialize && node scripts/build-extension.mjs",
     "package:extension": "npm run materialize && bash scripts/package-extension.sh",
     "deploy": "npm run materialize && npx wrangler deploy --config wrangler.jsonc",
-    "materialize": "node scripts/materialize-sources.mjs",
-    "check:automation": "npm run materialize && node --check automation/worker.js && node tests/automation-check.mjs",
-    "render:automation": "node scripts/render-automation-config.mjs",
-    "deploy:automation": "bash scripts/deploy-automation.sh",
-    "secret:automation": "bash scripts/put-automation-secret.sh"
+    "materialize": "node scripts/materialize-sources.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"
