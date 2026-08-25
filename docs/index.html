@@ -39,6 +39,38 @@
       <p class="tiny">5分おき。マガジン追加は直近60分で最大10件。スキ制限中もマガジン追加は継続します。</p>
     </section>
 
+    <section class="backfill panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">ONE-TIME SYNC</p><h2>過去のスキを整理</h2></div>
+        <span id="backfillBadge" class="status-badge">未確認</span>
+      </div>
+      <p id="backfillText" class="muted">過去にスキした記事を全件確認し、「ネロのお気に入り🌙」へ追加します。すでに入っている記事は自動でスキップします。</p>
+      <div class="backfill-stats">
+        <div><strong id="backfillTotal">—</strong><span>対象</span></div>
+        <div><strong id="backfillAdded">—</strong><span>新規追加</span></div>
+        <div><strong id="backfillAlready">—</strong><span>追加済み</span></div>
+        <div><strong id="backfillRemaining">—</strong><span>残り</span></div>
+      </div>
+      <div class="auto-meter"><div id="backfillMeterBar"></div></div>
+      <div class="button-row">
+        <button id="backfillScan" class="primary">過去スキを確認</button>
+        <button id="backfillStart" class="secondary" hidden>同期を開始</button>
+        <button id="backfillPause" class="secondary" hidden>一時停止</button>
+        <button id="backfillResume" class="secondary" hidden>再開</button>
+        <button id="backfillCancel" class="ghost" hidden>整理をやめる</button>
+      </div>
+      <p class="tiny">同期中だけ通常の自動運転を一時停止し、完了後に元のON/OFFへ戻します。登録は12秒以上あけて順番に行い、途中でFirefoxが止まっても続きから再開します。</p>
+    </section>
+
+    <section class="history panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">HISTORY</p><h2>処理履歴</h2></div>
+        <span id="historyCount" class="status-badge">0件</span>
+      </div>
+      <p class="muted">自動運転と過去スキ整理の結果を、このFirefox端末内に保存します。</p>
+      <div id="historyList" class="history-list"><div class="history-empty">まだ履歴がありません。</div></div>
+    </section>
+
     <section class="search panel">
       <div class="search-row">
         <input id="searchInput" type="search" autocomplete="off" placeholder="キーワード / ハッシュタグ">
