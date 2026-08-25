@@ -96,6 +96,8 @@ assert.equal(likeCalls, 1);
 assert.equal(magazineCalls, 1);
 assert.ok(storage['nero.localAuto.state.v1'].likeBlockedUntil > Date.now());
 
+// A different candidate on the next cycle: likes are skipped during cooldown,
+// while magazine additions continue.
 candidatePayload.data.notes[0].key = 'ndef456';
 candidatePayload.data.notes[0].user.urlname = 'writer_two';
 const second = await t.runOnce('test');
@@ -103,6 +105,7 @@ assert.equal(second.status, 'magazine_added_like_cooldown');
 assert.equal(likeCalls, 1);
 assert.equal(magazineCalls, 2);
 
+// Rolling-hour cap blocks the 11th magazine add.
 storage['nero.localAuto.state.v1'].events = Array.from({ length: 10 }, (_, i) => ({ kind: 'magazine', at: Date.now() - i * 1000 }));
 const capped = await t.runOnce('test');
 assert.equal(capped.status, 'hourly_limit');
