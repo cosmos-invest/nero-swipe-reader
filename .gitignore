@@ -12,3 +12,6 @@ dist/
 /extension/background.js
 /extension/note-bridge.js
 /extension/reader-bridge.js
+.wrangler.automation.generated.jsonc
+
+/automation/worker.js
