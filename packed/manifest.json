@@ -1,11 +1,11 @@
 {
   "extension/background.js": {
-    "sha256": "6785be5b1b7865d0c8aedf3109459bfd5c34b0547fa73dee52f3f256a573bb21",
+    "sha256": "8b3bb7ab404353491448f0f60572140ce08bf60b2c0036807d4e04ca95294aaa",
     "parts": [
       "extension__background.js.part01.b64",
       "extension__background.js.part02.b64"
     ],
-    "bytes": 50872
+    "bytes": 50869
   },
   "extension/note-bridge.js": {
     "sha256": "f60e3f80fe8084105c2d71c9f04dc4779befbea44370e3b3dd188bd30d641094",
