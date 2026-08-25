@@ -34,12 +34,5 @@
       "src__worker.js.part05.b64"
     ],
     "bytes": 139376
-  },
-  "automation/worker.js": {
-    "sha256": "86c8ab319f5045c88283308b57c789993df180266e997851725bd9b01d8bd76f",
-    "parts": [
-      "automation__worker.js.part01.b64"
-    ],
-    "bytes": 16193
   }
 }
