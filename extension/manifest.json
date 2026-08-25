@@ -25,7 +25,8 @@
       ],
       "js": [
         "engagement-core.js",
-        "reader-bridge.js"
+        "reader-bridge.js",
+        "pages-bridge.js"
       ],
       "run_at": "document_idle"
     },
