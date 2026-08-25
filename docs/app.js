@@ -10,18 +10,25 @@
   let searchSeq = 0;
   let requestSeq = 0;
   let touchStartX = 0;
+  let backfillPoll = 0;
 
   function bridgeReady(){ return document.documentElement.dataset.neroExtension === 'ready'; }
+  function bridgeVersion(){ return document.documentElement.dataset.neroExtensionVersion || ''; }
+  function versionAtLeast(min){
+    const a=bridgeVersion().split('.').map(Number), b=min.split('.').map(Number);
+    for(let i=0;i<3;i++){if((a[i]||0)>(b[i]||0))return true;if((a[i]||0)<(b[i]||0))return false;}return true;
+  }
   function notice(text,error=false){ const el=$('notice'); el.hidden=!text; el.textContent=text||''; el.classList.toggle('error',Boolean(error)); }
   function fmtDate(value){ if(!value)return''; try{return new Intl.DateTimeFormat('ja-JP',{month:'numeric',day:'numeric'}).format(new Date(value));}catch(_){return'';} }
   function fmtTime(value){ if(!value)return''; try{return new Intl.DateTimeFormat('ja-JP',{hour:'2-digit',minute:'2-digit'}).format(new Date(value));}catch(_){return'';} }
+  function fmtDateTime(value){ if(!value)return''; try{return new Intl.DateTimeFormat('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value));}catch(_){return'';} }
 
   function requestEvent(name,datasetKey,resultEvent,resultKey,payload,timeout=12000){
     return new Promise((resolve,reject)=>{
       const id=`page-${Date.now()}-${++requestSeq}`;
       const timer=setTimeout(()=>{cleanup();reject(new Error('Firefox拡張との通信がタイムアウトしました。'));},timeout);
       function cleanup(){clearTimeout(timer);document.removeEventListener(resultEvent,onResult);}
-      function onResult(){let result=null;try{result=JSON.parse(document.documentElement.dataset[resultKey]||'');}catch(_){return;}if(!result||result.id!==id)return;cleanup();result.ok?resolve(result):reject(new Error(result.message||'処理できませんでした。'));}
+      function onResult(){let result=null;try{result=JSON.parse(document.documentElement.dataset[resultKey]||'');}catch(_){return;}if(!result||result.id!==id)return;cleanup();result.ok?resolve(result):reject(Object.assign(new Error(result.message||'処理できませんでした。'),{result}));}
       document.addEventListener(resultEvent,onResult);
       document.documentElement.dataset[datasetKey]=JSON.stringify({...payload,id});
       document.dispatchEvent(new Event(name));
@@ -35,9 +42,15 @@
   }
 
   async function requestAutoStatus(){
-    if(!bridgeReady()){ renderAuto({enabled:false,unavailable:true}); return; }
-    try{const r=await requestEvent('nero-auto-status-request','neroAutoStatusRequest','nero-auto-status-result','neroAutoStatusResult',{});renderAuto(r.state||{});}catch(e){renderAuto({enabled:false,error:e.message});}
+    if(!bridgeReady()){ renderAuto({enabled:false,unavailable:true}); renderBackfill({},true); renderHistory([]); return; }
+    try{
+      const r=await requestEvent('nero-auto-status-request','neroAutoStatusRequest','nero-auto-status-result','neroAutoStatusResult',{});
+      renderAuto(r.state||{});
+      renderBackfill((r.state||{}).backfill||{},!versionAtLeast('0.1.33'));
+      renderHistory((r.state||{}).history||[]);
+    }catch(e){renderAuto({enabled:false,error:e.message});}
   }
+
   function renderAuto(state){
     autoEnabled=Boolean(state.enabled);
     const badge=$('autoBadge');
@@ -47,19 +60,101 @@
     $('autoResume').hidden=!state.paused;
     const count=Number(state.hourlyMagazineCount||0), max=Number(state.maxMagazinePerHour||10);
     $('autoMeterBar').style.width=`${Math.min(100,Math.max(0,count/max*100))}%`;
-    if(state.unavailable){$('autoText').textContent='Firefox拡張機能v0.1.32を接続すると自動運転を管理できます。';return;}
+    if(state.unavailable){$('autoText').textContent='Firefox拡張機能を接続すると自動運転を管理できます。';return;}
     if(state.error){$('autoText').textContent=state.error;return;}
     const like=Number(state.likeBlockedUntil||0)>Date.now()?`スキ休止中（${fmtTime(state.likeBlockedUntil)}再確認）／マガジン継続`:'スキ稼働中';
     $('autoText').textContent=`${like}｜直近60分 ${count}/${max}件｜5分おき${state.boundAccount?`｜@${state.boundAccount}`:''}${state.pauseReason?`｜停止理由: ${state.pauseReason}`:''}`;
   }
+
   async function autoControl(action){
-    try{const r=await requestEvent('nero-auto-control-request','neroAutoControlRequest','nero-auto-control-result','neroAutoControlResult',{action},30000);renderAuto(r.state||{});notice(action==='run'?'1件の自動処理を実行しました。':'自動運転を更新しました。');}
+    try{const r=await requestEvent('nero-auto-control-request','neroAutoControlRequest','nero-auto-control-result','neroAutoControlResult',{action},30000);renderAuto(r.state||{});renderBackfill((r.state||{}).backfill||{},!versionAtLeast('0.1.33'));renderHistory((r.state||{}).history||[]);notice(action==='run'?'1件の自動処理を実行しました。':'自動運転を更新しました。');}
     catch(e){notice(e.message,true);}
+  }
+
+  function backfillLabel(status){
+    return ({idle:'未確認',scanning:'確認中',ready:'準備完了',running:'同期中',paused:'一時停止',completed:'完了',cancelled:'中止',failed:'確認失敗'})[status]||'未確認';
+  }
+
+  function renderBackfill(backfill={},unsupported=false){
+    const badge=$('backfillBadge');
+    const status=String(backfill.status||'idle');
+    badge.className='status-badge'+(status==='running'?' on':(status==='paused'||status==='failed'?' pause':(status==='completed'?' done':'')));
+    badge.textContent=unsupported?'v0.1.33必要':backfillLabel(status);
+    const total=Number(backfill.total||0), processed=Number(backfill.processed||0), added=Number(backfill.added||0), already=Number(backfill.already||0), remaining=Number(backfill.remaining||Math.max(0,total-processed));
+    $('backfillTotal').textContent=unsupported?'—':String(total);
+    $('backfillAdded').textContent=unsupported?'—':String(added);
+    $('backfillAlready').textContent=unsupported?'—':String(already);
+    $('backfillRemaining').textContent=unsupported?'—':String(remaining);
+    $('backfillMeterBar').style.width=total?`${Math.min(100,processed/total*100)}%`:'0%';
+    const scan=$('backfillScan'), start=$('backfillStart'), pause=$('backfillPause'), resume=$('backfillResume'), cancel=$('backfillCancel');
+    [scan,start,pause,resume,cancel].forEach(b=>{b.hidden=true;b.disabled=unsupported;});
+    if(unsupported){scan.hidden=false;$('backfillText').textContent='この機能はFirefox拡張 v0.1.33から利用できます。現在の自動運転はそのまま継続します。';stopBackfillPoll();return;}
+    if(status==='idle'||status==='cancelled'||status==='failed'||status==='completed') scan.hidden=false;
+    if(status==='ready') start.hidden=false;
+    if(status==='running'){pause.hidden=false;cancel.hidden=false;startBackfillPoll();}
+    else stopBackfillPoll();
+    if(status==='paused'){resume.hidden=false;cancel.hidden=false;}
+    let text='過去にスキした記事を全件確認し、「ネロのお気に入り🌙」へ追加します。すでに入っている記事は自動でスキップします。';
+    if(status==='scanning') text=`過去のスキを確認中… ${Number(backfill.scannedPages||0)}ページ読み込みました。`;
+    if(status==='ready') text=`過去スキ ${total}件を確認しました。同期を開始すると、追加済みを飛ばしながら順番に整理します。`;
+    if(status==='running') text=`同期中です。${processed}/${total}件を確認済み。新規 ${added}件、すでに追加済み ${already}件。`;
+    if(status==='paused') text=`同期を一時停止しています。${backfill.pauseReason&&backfill.pauseReason!=='user_paused'?`理由: ${backfill.pauseReason}。`:''}${backfill.nextRetryAt?`${fmtDateTime(backfill.nextRetryAt)}以降に再開できます。`:''}`;
+    if(status==='completed') text=`整理完了。過去スキ ${total}件を確認し、新規 ${added}件を追加、${already}件はすでにマガジン入りでした。`;
+    if(status==='failed') text=`過去スキの確認に失敗しました。${backfill.pauseReason||'noteのログイン状態を確認してください。'}`;
+    $('backfillText').textContent=text;
+  }
+
+  async function backfillControl(action){
+    if(!versionAtLeast('0.1.33')){notice('過去スキ整理はFirefox拡張 v0.1.33から利用できます。',true);return;}
+    const timeout=action==='scan'?120000:(action==='start'||action==='resume'?90000:20000);
+    try{
+      const r=await requestEvent('nero-backfill-control-request','neroBackfillControlRequest','nero-backfill-control-result','neroBackfillControlResult',{action},timeout);
+      const state=r.state||{};
+      renderAuto(state);renderBackfill(r.backfill||state.backfill||{},false);renderHistory(state.history||[]);
+      if(action==='scan')notice(`過去スキ ${Number((r.backfill||{}).total||0)}件を確認しました。`);
+      else if(action==='start'||action==='resume')notice('過去スキの整理を開始しました。ページを閉じてもFirefox側で続きます。');
+      else if(action==='pause')notice('過去スキ整理を一時停止しました。');
+      else if(action==='cancel')notice('過去スキ整理を中止しました。');
+    }catch(e){const r=e.result||{};if(r.state){renderAuto(r.state);renderBackfill(r.backfill||r.state.backfill||{},false);renderHistory(r.state.history||[]);}notice(e.message,true);}
+  }
+
+  function startBackfillPoll(){if(backfillPoll)return;backfillPoll=setInterval(()=>requestAutoStatus().catch(()=>{}),10000);}
+  function stopBackfillPoll(){if(backfillPoll){clearInterval(backfillPoll);backfillPoll=0;}}
+
+  function historyResultLabel(row){
+    if(row.result==='failed')return '失敗';
+    if(row.result==='already')return '追加済み';
+    return row.mode==='backfill'?'過去スキ追加':'追加';
+  }
+  function likeLabel(value){
+    if(!value)return'';
+    if(value==='ok')return'スキ';
+    if(value==='already')return'スキ済み';
+    if(value==='like_cooldown')return'スキ休止';
+    if(/rate|limit|rejected/.test(value))return'スキ制限';
+    return'';
+  }
+  function renderHistory(history){
+    const list=$('historyList');const rows=Array.isArray(history)?history.slice(0,30):[];
+    $('historyCount').textContent=`${rows.length}件`;
+    list.textContent='';
+    if(!rows.length){const e=document.createElement('div');e.className='history-empty';e.textContent=versionAtLeast('0.1.33')?'まだ履歴がありません。':'v0.1.33へ更新すると自動処理履歴を表示できます。';list.appendChild(e);return;}
+    rows.forEach(row=>{
+      const item=document.createElement('div');item.className='history-item';
+      const main=document.createElement('div');main.className='history-main';
+      const title=document.createElement('div');title.className='history-title';title.textContent=row.title||row.key||'記事';
+      const meta=document.createElement('div');meta.className='history-meta';meta.textContent=[fmtDateTime(row.at),row.creator?`@${row.creator}`:'',row.mode==='backfill'?'過去スキ整理':'自動運転'].filter(Boolean).join(' · ');
+      main.append(title,meta);
+      const badges=document.createElement('div');badges.className='history-badges';
+      const result=document.createElement('span');result.className=`history-tag ${row.result||'added'}`;result.textContent=historyResultLabel(row);badges.appendChild(result);
+      const like=likeLabel(row.like);if(like){const b=document.createElement('span');b.className='history-tag';b.textContent=like;badges.appendChild(b);}
+      item.append(main,badges);list.appendChild(item);
+    });
   }
 
   async function search(query,page=1){
     const q=String(query||'').replace(/^#+/,'').trim();if(!q)return;
-    if(!bridgeReady()){notice('Firefox拡張機能v0.1.32をインストールして、このページを再読み込みしてください。',true);return;}
+    if(!bridgeReady()){notice('Firefox拡張機能をインストールして、このページを再読み込みしてください。',true);return;}
     notice('noteから記事を探しています…');$('searchButton').disabled=true;
     try{
       const id=`search-${Date.now()}-${++searchSeq}`;
@@ -98,7 +193,7 @@
 
   function syncBridge(){
     const ready=bridgeReady(),status=$('neroExtensionStatus');
-    if(ready){const version=document.documentElement.dataset.neroExtensionVersion||'';status.textContent=`Firefox連携中 v${version}`;status.classList.add('connected');requestAccount();requestAutoStatus();}
+    if(ready){const version=bridgeVersion();status.textContent=`Firefox連携中 v${version}`;status.classList.add('connected');requestAccount();requestAutoStatus();}
     else{status.textContent='Firefox未接続';status.classList.remove('connected');}
   }
 
@@ -106,9 +201,9 @@
   $('searchButton').addEventListener('click',()=>search($('searchInput').value));$('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')search(e.currentTarget.value);});
   $('prev').addEventListener('click',()=>move(-1));$('next').addEventListener('click',()=>move(1));$('magazine').addEventListener('click',addMagazine);
   $('autoToggle').addEventListener('click',()=>autoControl(autoEnabled?'disable':'enable'));$('autoResume').addEventListener('click',()=>autoControl('resume'));$('runNow').addEventListener('click',()=>autoControl('run'));
+  $('backfillScan').addEventListener('click',()=>backfillControl('scan'));$('backfillStart').addEventListener('click',()=>backfillControl('start'));$('backfillPause').addEventListener('click',()=>backfillControl('pause'));$('backfillResume').addEventListener('click',()=>backfillControl('resume'));$('backfillCancel').addEventListener('click',()=>backfillControl('cancel'));
   $('card').addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].clientX;},{passive:true});$('card').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchStartX;if(Math.abs(dx)>55)move(dx<0?1:-1);},{passive:true});
-  document.addEventListener('nero-liked-status',()=>{const state=document.documentElement.dataset.neroCurrentLiked;if(state==='true'){$('like').textContent='♥ スキ済み';$('like').dataset.liked='true';}else if(state==='false')$('like').textContent='♡ スキ';else $('like').textContent='♡ スキ';});
-  document.addEventListener('nero-account-result',()=>{});
+  document.addEventListener('nero-liked-status',()=>{const state=document.documentElement.dataset.neroCurrentLiked;if(state==='true'){$('like').textContent='♥ スキ済み';$('like').dataset.liked='true';}else $('like').textContent='♡ スキ';});
   const observer=new MutationObserver(syncBridge);observer.observe(document.documentElement,{attributes:true,attributeFilter:['data-nero-extension','data-nero-extension-version']});
   syncBridge();setTimeout(syncBridge,700);setTimeout(syncBridge,1800);
 })();
