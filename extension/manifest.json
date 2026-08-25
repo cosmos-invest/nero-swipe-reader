@@ -1,19 +1,68 @@
 {
   "manifest_version": 2,
   "name": "NERO Swipe Reader Bridge",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "description": "NERO Favorite Readerから、本人のnoteログイン状態を使ってスキ、コメント、ネロのお気に入り🌙への保存、検索、フィード確認を行います。認証情報は外部サーバーへ保存しません。",
-  "permissions": ["tabs","storage","https://note.com/*","https://www.note.com/*","__READER_ORIGIN__/*"],
-  "background": {"scripts":["background.js"],"persistent":false},
-  "content_scripts": [
-    {"matches":["__READER_ORIGIN__/*"],"js":["engagement-core.js","reader-bridge.js"],"run_at":"document_idle"},
-    {"matches":["https://note.com/*","https://www.note.com/*"],"js":["note-bridge.js"],"run_at":"document_idle"}
+  "permissions": [
+    "tabs",
+    "storage",
+    "alarms",
+    "https://note.com/*",
+    "https://www.note.com/*",
+    "__READER_ORIGIN__/*"
   ],
-  "browser_action": {"default_title":"NERO Swipe Reader","default_popup":"popup.html","default_icon":"icons/nero.svg"},
-  "icons": {"48":"icons/nero.svg","96":"icons/nero.svg"},
+  "background": {
+    "scripts": [
+      "background.js",
+      "local-auto.js"
+    ],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "__READER_ORIGIN__/*"
+      ],
+      "js": [
+        "engagement-core.js",
+        "reader-bridge.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://note.com/*",
+        "https://www.note.com/*"
+      ],
+      "js": [
+        "note-bridge.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_action": {
+    "default_title": "NERO Swipe Reader",
+    "default_popup": "popup.html",
+    "default_icon": "icons/nero.svg"
+  },
+  "icons": {
+    "48": "icons/nero.svg",
+    "96": "icons/nero.svg"
+  },
   "browser_specific_settings": {
-    "gecko": {"id":"nero-swipe-reader@local.invalid","strict_min_version":"140.0","data_collection_permissions":{"required":["personalCommunications","websiteActivity"]}},
-    "gecko_android": {"strict_min_version":"142.0"}
+    "gecko": {
+      "id": "nero-swipe-reader@local.invalid",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "personalCommunications",
+          "websiteActivity"
+        ]
+      }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0"
+    }
   },
   "content_security_policy": "script-src 'self'; object-src 'self'"
 }
