@@ -8,6 +8,7 @@ const manifest=JSON.parse(fs.readFileSync(path.join(root,'extension/manifest.jso
 assert(manifest.name==='NERO Swipe Reader Bridge','unexpected extension name');
 assert(manifest.version==='0.1.32','unexpected extension version');
 assert(manifest.permissions.includes('__READER_MATCH__'),'reader match placeholder missing');
+assert(manifest.content_scripts[0].js.includes('pages-bridge.js'),'Pages bridge missing');
 assert(manifest.browser_specific_settings.gecko.id==='nero-swipe-reader@local.invalid','extension id is not isolated');
 assert(!manifest.permissions.includes('__READER_ORIGIN__/*'),'legacy origin-only reader permission remains');
 
