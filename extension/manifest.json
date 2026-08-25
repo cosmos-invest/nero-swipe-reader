@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "NERO Swipe Reader Bridge",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "NERO Favorite Readerから、本人のnoteログイン状態を使ってスキ、コメント、ネロのお気に入り🌙への保存、検索、フィード確認を行います。認証情報は外部サーバーへ保存しません。",
   "permissions": [
     "tabs",
