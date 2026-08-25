@@ -2,6 +2,10 @@
 
 NEROの自動スキと「ネロのお気に入り🌙」への追加は、外部サーバーやGitHub Actionsを使わずFirefox拡張内で実行します。
 
+## GitHub Pages
+
+Reader UI は `https://cosmos-invest.github.io/nero-swipe-reader/` を正規URLとします。GitHub Pagesは画面だけを配信し、自動処理やnote認証は保持しません。
+
 ## 実行ルール
 
 - Firefox `browser.alarms` で5分おきに起動
@@ -34,7 +38,7 @@ NEROの自動スキと「ネロのお気に入り🌙」への追加は、外部
 - マガジン追加結果が不明
 - noteとのマガジン通信に失敗
 
-拡張ポップアップの「停止を解除」から明示的に再開します。
+Pages画面または拡張ポップアップの「停止を解除」から明示的に再開します。
 
 ## 保存場所
 
@@ -43,5 +47,5 @@ NEROの自動スキと「ネロのお気に入り🌙」への追加は、外部
 ## GitHub / Cloudflare
 
 - GitHub Actions: 使用しない
-- Cloudflare: 自動運転には使用しない
-- GitHub Pages: 将来Reader UIを置く場合のみ利用可能。自動運転そのものはPagesを閉じていてもFirefox拡張が担当します。
+- Cloudflare: 使用しない
+- GitHub Pages: `docs/` を `main` ブランチから静的配信
