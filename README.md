@@ -1,6 +1,6 @@
 # NERO Favorite Reader 🌙
 
-`ネロのお気に入り🌙` 専用の独立 Swipe Reader です。CloudflareとGitHub Actionsを使わず、GitHub Pages + Firefox拡張だけで動かします。
+`ネロのお気に入り🌙` 専用の独立 Swipe Reader です。Cloudflareやユーザー定義GitHub Actionsを使わず、GitHub Pages + Firefox拡張で動かします。
 
 ## 公開Reader
 
@@ -25,6 +25,10 @@
 - Bridgeは正規GitHub Pages URLのパスへ固定可能
 - `.github/workflows` は置かない
 - Cloudflareは使用しない
+
+## GitHub Actionsの扱い
+
+ユーザー定義workflowはありません。GitHub Pagesはbranch公開でもGitHub側のPages deployment workflowが内部で実行されますが、このリポジトリはPublicなので標準GitHub-hosted runnerの課金対象Actions分数は0です。
 
 ## Bridgeビルド
 
