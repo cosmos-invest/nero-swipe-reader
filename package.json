@@ -1,11 +1,11 @@
 {
   "name": "nero-swipe-reader",
   "private": true,
-  "version": "0.1.31",
+  "version": "0.1.32",
   "description": "Dedicated NERO Swipe Reader with Firefox-local automation",
   "type": "module",
   "scripts": {
-    "check": "npm run materialize && node tests/safety-check.mjs && npm run check:local-auto",
+    "check": "npm run materialize && node tests/safety-check.mjs && node tests/local-auto-check.mjs && node tests/pages-check.mjs",
     "check:local-auto": "node --check extension/local-auto.js && node tests/local-auto-check.mjs",
     "build:extension": "npm run materialize && node scripts/build-extension.mjs",
     "package:extension": "npm run materialize && bash scripts/package-extension.sh",
