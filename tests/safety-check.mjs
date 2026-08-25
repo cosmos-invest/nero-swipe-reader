@@ -27,6 +27,11 @@ assert(localAuto.includes('const MAX_MAGAZINE_PER_HOUR = 10'),'local automation 
 assert(localAuto.includes('state.likeBlockedUntil = now + LIKE_RETRY_MS'),'like cooldown behavior missing');
 assert(localAuto.includes("'magazine_added_like_rate_limited'"),'rate-limit magazine continuation missing');
 assert(!fs.existsSync(path.join(root,'.github','workflows')),'GitHub Actions workflows are not allowed');
+assert(!fs.existsSync(path.join(root,'wrangler.jsonc')),'Cloudflare wrangler config is not allowed');
+
+const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
+assert(!pkg.scripts?.deploy,'Cloudflare deployment script is not allowed');
+assert(!pkg.devDependencies?.wrangler,'wrangler dependency is not allowed');
 
 const tracked=execFileSync('git',['ls-files'],{cwd:root,encoding:'utf8'}).trim().split('\n').filter(Boolean);
 const forbiddenNames=['.env','.dev.vars'];
