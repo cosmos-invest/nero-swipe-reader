@@ -1,7 +1,7 @@
 'use strict';
 
 (function initializePagesBridge() {
-  const VERSION = '0.1.32';
+  const VERSION = '0.1.33';
 
   function publishVersion() {
     document.documentElement.dataset.neroExtensionVersion = VERSION;
@@ -13,47 +13,55 @@
     }
   }
 
-  document.addEventListener('nero-auto-status-request', async () => {
+  async function relay(requestDataset, resultDataset, resultEvent, message) {
     let request = null;
-    try { request = JSON.parse(document.documentElement.dataset.neroAutoStatusRequest || ''); } catch (_) {}
+    try { request = JSON.parse(document.documentElement.dataset[requestDataset] || ''); } catch (_) {}
     if (!request || !request.id) return;
     let result;
     try {
-      const response = await browser.runtime.sendMessage({ type: 'NERO_AUTO_STATUS' });
+      const response = await browser.runtime.sendMessage(message(request));
       result = response && response.ok
-        ? { id: request.id, ok: true, state: response.state || {} }
-        : { id: request.id, ok: false, message: '自動運転の状態を確認できませんでした。' };
+        ? { id: request.id, ok: true, ...response }
+        : { id: request.id, ok: false, message: response && (response.message || response.code) ? String(response.message || response.code) : '処理できませんでした。', ...(response || {}) };
     } catch (_) {
       result = { id: request.id, ok: false, message: 'Firefox拡張機能との通信に失敗しました。' };
     }
-    document.documentElement.dataset.neroAutoStatusResult = JSON.stringify(result);
-    document.dispatchEvent(new Event('nero-auto-status-result'));
-  });
+    document.documentElement.dataset[resultDataset] = JSON.stringify(result);
+    document.dispatchEvent(new Event(resultEvent));
+  }
 
-  document.addEventListener('nero-auto-control-request', async () => {
-    let request = null;
-    try { request = JSON.parse(document.documentElement.dataset.neroAutoControlRequest || ''); } catch (_) {}
-    if (!request || !request.id) return;
-    const typeByAction = {
-      enable: 'NERO_AUTO_ENABLE',
-      disable: 'NERO_AUTO_DISABLE',
-      resume: 'NERO_AUTO_RESUME',
-      run: 'NERO_AUTO_RUN_NOW'
-    };
-    const messageType = typeByAction[String(request.action || '')];
-    if (!messageType) return;
-    let result;
-    try {
-      const response = await browser.runtime.sendMessage({ type: messageType });
-      result = response && response.ok
-        ? { id: request.id, ok: true, state: response.state || {}, summary: response.summary || null }
-        : { id: request.id, ok: false, message: response && response.code ? String(response.code) : '自動運転を変更できませんでした。' };
-    } catch (_) {
-      result = { id: request.id, ok: false, message: 'Firefox拡張機能との通信に失敗しました。' };
+  document.addEventListener('nero-auto-status-request', () => relay(
+    'neroAutoStatusRequest', 'neroAutoStatusResult', 'nero-auto-status-result',
+    () => ({ type: 'NERO_AUTO_STATUS' })
+  ));
+
+  document.addEventListener('nero-auto-control-request', () => relay(
+    'neroAutoControlRequest', 'neroAutoControlResult', 'nero-auto-control-result',
+    (request) => {
+      const typeByAction = {
+        enable: 'NERO_AUTO_ENABLE',
+        disable: 'NERO_AUTO_DISABLE',
+        resume: 'NERO_AUTO_RESUME',
+        run: 'NERO_AUTO_RUN_NOW'
+      };
+      return { type: typeByAction[String(request.action || '')] || 'NERO_AUTO_STATUS' };
     }
-    document.documentElement.dataset.neroAutoControlResult = JSON.stringify(result);
-    document.dispatchEvent(new Event('nero-auto-control-result'));
-  });
+  ));
+
+  document.addEventListener('nero-backfill-control-request', () => relay(
+    'neroBackfillControlRequest', 'neroBackfillControlResult', 'nero-backfill-control-result',
+    (request) => {
+      const typeByAction = {
+        status: 'NERO_BACKFILL_STATUS',
+        scan: 'NERO_BACKFILL_SCAN',
+        start: 'NERO_BACKFILL_START',
+        pause: 'NERO_BACKFILL_PAUSE',
+        resume: 'NERO_BACKFILL_RESUME',
+        cancel: 'NERO_BACKFILL_CANCEL'
+      };
+      return { type: typeByAction[String(request.action || '')] || 'NERO_BACKFILL_STATUS' };
+    }
+  ));
 
   publishVersion();
   document.addEventListener('DOMContentLoaded', publishVersion, { once: true });
