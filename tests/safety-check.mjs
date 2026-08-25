@@ -15,6 +15,7 @@ assert(worker.includes('setTimeout(resolve,12000)'),'12-second queue interval mi
 assert(worker.includes('neroAutoStopped=true'),'failure-stop behavior missing');
 assert(worker.includes('var DEFAULT_CREATORS=[];'),'unexpected default creator identity');
 
+
 const localAuto=fs.readFileSync(path.join(root,'extension/local-auto.js'),'utf8');
 assert(manifest.permissions.includes('alarms'),'Firefox alarms permission missing');
 assert(manifest.background.scripts.includes('local-auto.js'),'local automation background script missing');
@@ -24,6 +25,7 @@ assert(localAuto.includes('const MAX_MAGAZINE_PER_HOUR = 10'),'local automation 
 assert(localAuto.includes('state.likeBlockedUntil = now + LIKE_RETRY_MS'),'like cooldown behavior missing');
 assert(localAuto.includes("'magazine_added_like_rate_limited'"),'rate-limit magazine continuation missing');
 assert(!fs.existsSync(path.join(root,'.github','workflows')),'GitHub Actions workflows are not allowed');
+
 
 const tracked=execFileSync('git',['ls-files'],{cwd:root,encoding:'utf8'}).trim().split('\n').filter(Boolean);
 const forbiddenNames=['.env','.dev.vars'];
