@@ -1,47 +1,57 @@
-# NERO Swipe Reader
+# NERO Favorite Reader 🌙
 
-NERO専用のSwipe ReaderとFirefox Bridgeです。
+`ネロのお気に入り🌙` 専用の独立 Swipe Reader です。CloudflareとGitHub Actionsを使わず、GitHub Pages + Firefox拡張だけで動かします。
 
-## 自動運転
+## 公開Reader
 
-v0.1.31から、自動スキと `ネロのお気に入り🌙` への自動追加は **Firefox拡張内だけ** で動きます。
+- GitHub Pages: `https://cosmos-invest.github.io/nero-swipe-reader/`
+- Pagesの役割: Reader画面、検索、スキ/コメント/フォロー/マガジン追加操作、自動運転の状態確認
+- 自動運転: Firefox拡張の `browser.alarms` が担当。Pagesを閉じていてもFirefoxが稼働していれば継続
+
+## 自動運転 v0.1.32
 
 - 5分おきに候補を1件処理
-- 直近60分でマガジン追加最大10件
-- スキ成功後は12秒待ってマガジン追加
-- スキ制限に当たった場合はスキだけ1時間休止
-- スキ休止中もマガジン追加は5分おきに継続
-- noteログインアカウント完全一致
-- マガジン名 `ネロのお気に入り🌙` 完全一致
-- マガジン側の失敗・認証不一致は全体停止
-- 履歴と状態はFirefox端末内 `browser.storage.local` のみ
+- `ネロのお気に入り🌙` への追加は直近60分で最大10件
+- 通常はスキ後12秒待ってマガジン追加
+- スキ制限時はスキだけ1時間休止し、マガジン追加は継続
+- 認証不一致やマガジン側異常は全体停止
+- 実行状態・履歴はFirefox `browser.storage.local` のみ
 
-詳細: [docs/LOCAL_AUTOMATION.md](docs/LOCAL_AUTOMATION.md)
+## 安全設計
 
-## 外部実行基盤
+- noteのCookie・セッション・パスワードをGitHub/Pagesへ保存しない
+- マガジンは **`ネロのお気に入り🌙` 完全一致**のみ
+- Firefox拡張IDを `nero-swipe-reader@local.invalid` として分離
+- Bridgeは正規GitHub Pages URLのパスへ固定可能
+- `.github/workflows` は置かない
+- Cloudflareは使用しない
 
-自動運転にCloudflareは使いません。GitHub Actionsも使いません。
+## Bridgeビルド
 
-GitHub PagesはReaderの静的UIを公開したい場合に利用できますが、定期実行やnote書き込みはPagesではなくFirefox拡張が担当します。
-
-## ビルド
+正規Pages URLが既定値なので、そのままビルドできます。
 
 ```bash
-npm install
 npm run check
-READER_ORIGIN=https://<NERO専用HTTPSホスト> npm run build:extension
+npm run build:extension
 npm run package:extension
 ```
 
-通常のAndroid Firefoxへ恒久インストールする場合は、生成ZIPとは別にMozilla署名済みXPIが必要です。
+別URLへ切り替える場合のみ `READER_URL` を指定します。
 
-## セキュリティ
+```bash
+READER_URL=https://nero.example.com/ npm run build:extension
+```
 
-- note Cookie / セッション値をGitHubへ保存しない
-- 外部サーバーへnote認証情報を送らない
-- 自動運転のアカウントは初回ON時に端末へ固定
-- 対象マガジンは `ネロのお気に入り🌙` 完全一致のみ
-- マガジン追加結果不明時は自動停止
-- `.github/workflows` は作成しない
+Android版Firefoxの通常インストールにはMozilla署名済みXPIが必要です。
 
-> noteへの操作は公式公開APIではなく、Webクライアントで観測されるエンドポイントに依存します。仕様変更時は安全側に停止します。
+## GitHub Pagesの公開設定
+
+Repository Settings → Pages → Build and deployment → Source を **Deploy from a branch** にし、Branch **main /docs** を選びます。リポジトリにはユーザー定義のGitHub Actions workflowを追加しません。
+
+## 検査
+
+```bash
+npm run check
+```
+
+詳細は `docs/LOCAL_AUTOMATION.md` を参照してください。
