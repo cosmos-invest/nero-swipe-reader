@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const html=fs.readFileSync('docs/index.html','utf8');
+const app=fs.readFileSync('docs/app.js','utf8');
+const build=fs.readFileSync('scripts/build-extension.mjs','utf8');
+assert.match(html,/NERO Favorite Reader/);
+assert.match(html,/id="autoToggle"/);
+assert.match(html,/id="magazine"/);
+assert.match(app,/nero-search-request/);
+assert.match(app,/nero-magazine-add-request/);
+assert.match(app,/nero-auto-status-request/);
+assert.match(app,/ネロのお気に入り🌙/);
+assert.match(build,/cosmos-invest\.github\.io\/nero-swipe-reader/);
+assert.match(build,/__READER_BASE__/);
+assert.match(build,/__READER_MATCH__/);
+console.log('pages-check-ok');
