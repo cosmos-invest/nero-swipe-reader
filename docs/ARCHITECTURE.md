@@ -18,4 +18,4 @@ GitHub Pages Readerと `note.com` の間だけをつなぎます。noteへのス
 自動運転ON/OFF、端末固定アカウント、処理履歴、スキ休止時刻はFirefox `browser.storage.local` に保存します。note Cookieやセッション値は保存しません。
 
 ## Separation boundary
-Cloudflare、GitHub Actions、ほかのReaderのoriginは使用しません。拡張IDもNERO専用にし、更新経路を分離します。
+Cloudflareとユーザー定義GitHub Actions workflowは使用しません。GitHub Pages公開時にGitHub内部のPages deployment workflowは実行されますが、Publicリポジトリの標準runnerなので課金対象Actions分数は0です。ほかのReaderのoriginは許可せず、拡張IDもNERO専用にして更新経路を分離します。
