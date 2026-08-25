@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.dev.vars
+.env
+.env.*
+*.xpi
+*.zip
+.DS_Store
+
+# Materialized from verified packed sources
+/src/worker.js
+/extension/background.js
+/extension/note-bridge.js
+/extension/reader-bridge.js

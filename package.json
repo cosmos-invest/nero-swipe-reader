@@ -1,0 +1,17 @@
+{
+  "name": "nero-swipe-reader",
+  "private": true,
+  "version": "0.1.30",
+  "description": "Dedicated NERO Swipe Reader and Firefox Bridge",
+  "type": "module",
+  "scripts": {
+    "check": "npm run materialize && node tests/safety-check.mjs",
+    "build:extension": "npm run materialize && node scripts/build-extension.mjs",
+    "package:extension": "npm run materialize && bash scripts/package-extension.sh",
+    "deploy": "npm run materialize && npx wrangler deploy --config wrangler.jsonc",
+    "materialize": "node scripts/materialize-sources.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

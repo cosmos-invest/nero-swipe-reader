@@ -1,0 +1,22 @@
+{
+  "extension/background.js": {
+    "sha256": "6785be5b1b7865d0c8aedf3109459bfd5c34b0547fa73dee52f3f256a573bb21",
+    "parts": ["extension__background.js.part01.b64","extension__background.js.part02.b64"],
+    "bytes": 50872
+  },
+  "extension/note-bridge.js": {
+    "sha256": "f60e3f80fe8084105c2d71c9f04dc4779befbea44370e3b3dd188bd30d641094",
+    "parts": ["extension__note-bridge.js.part01.b64","extension__note-bridge.js.part02.b64"],
+    "bytes": 43889
+  },
+  "extension/reader-bridge.js": {
+    "sha256": "438d07f8d3cca662a79ff2cc23bf10bcd5d486d3aa426d1d9b50fefbe61398f0",
+    "parts": ["extension__reader-bridge.js.part01.b64","extension__reader-bridge.js.part02.b64","extension__reader-bridge.js.part03.b64"],
+    "bytes": 67907
+  },
+  "src/worker.js": {
+    "sha256": "6c35b0dc98fcb08a94a3503e98c1f1488602e243521f2bd7fc89a4314f25c2e1",
+    "parts": ["src__worker.js.part01.b64","src__worker.js.part02.b64","src__worker.js.part03.b64","src__worker.js.part04.b64","src__worker.js.part05.b64"],
+    "bytes": 139376
+  }
+}
