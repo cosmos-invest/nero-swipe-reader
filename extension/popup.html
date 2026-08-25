@@ -1,1 +1,31 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NERO Favorite Reader</title><link rel="stylesheet" href="popup.css"></head><body><main><div class="mark">🌸</div><h1>NERO Favorite Reader</h1><p>FirefoxでnoteへログインしてからReaderを開くと、スキ・コメント・返信・フォロー・マガジン保存、未対応コメントと過去7日間のありがとうを確認できます。</p><button id="openReader" class="primary" type="button">Readerを開く</button><button id="openNeroReader" class="secondary" type="button">🌙 ネロ用Readerを開く</button><button id="openLogin" class="secondary" type="button">noteへログイン</button><small>ログイン情報やコメント内容は拡張機能の外へ保存しません。</small></main><script src="popup.js"></script></body></html>
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NERO Favorite Reader</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <div class="mark">🌙</div>
+    <h1>NERO Favorite Reader</h1>
+    <p>Firefoxでnoteへログインして使います。認証情報は外部サーバーへ保存しません。</p>
+
+    <section class="auto-card">
+      <div class="auto-head"><strong>自動お気に入り</strong><span id="autoBadge">確認中</span></div>
+      <p id="autoStatus">5分おき・直近60分で最大10件。スキ制限中もマガジン追加は継続します。</p>
+      <div class="auto-actions">
+        <button id="autoToggle" class="primary" type="button">自動運転をON</button>
+        <button id="autoResume" class="secondary" type="button" hidden>停止を解除</button>
+      </div>
+    </section>
+
+    <button id="openReader" class="secondary" type="button">Readerを開く</button>
+    <button id="openNeroReader" class="secondary" type="button">🌙 ネロ用Readerを開く</button>
+    <button id="openLogin" class="secondary" type="button">noteへログイン</button>
+    <small>マガジン追加先は「ネロのお気に入り🌙」完全一致のみです。</small>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
