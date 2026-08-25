@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#15121b">
+  <title>NERO Favorite Reader 🌙</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="./"><span class="moon">☾</span><span>NERO Favorite Reader</span></a>
+      <span id="neroExtensionStatus" class="bridge-status">Firefox未接続</span>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">ネロのお気に入り🌙</p>
+        <h1>いい記事を、静かに拾う。</h1>
+        <p class="lead">Firefoxでnoteへログインして使う、ネロ専用Reader。認証情報はこのページへ保存しません。</p>
+      </div>
+      <div class="account-pill"><span>note</span><strong id="account">確認中…</strong></div>
+    </section>
+
+    <section class="automation panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">LOCAL AUTO</p><h2>自動運転</h2></div>
+        <span id="autoBadge" class="status-badge">確認中</span>
+      </div>
+      <p id="autoText" class="muted">Firefox拡張から状態を読み込んでいます。</p>
+      <div class="auto-meter"><div id="autoMeterBar"></div></div>
+      <div class="button-row">
+        <button id="autoToggle" class="primary">自動運転をON</button>
+        <button id="runNow" class="secondary">今すぐ1件</button>
+        <button id="autoResume" class="secondary" hidden>停止を解除</button>
+      </div>
+      <p class="tiny">5分おき。マガジン追加は直近60分で最大10件。スキ制限中もマガジン追加は継続します。</p>
+    </section>
+
+    <section class="search panel">
+      <div class="search-row">
+        <input id="searchInput" type="search" autocomplete="off" placeholder="キーワード / ハッシュタグ">
+        <button id="searchButton" class="primary">探す</button>
+      </div>
+      <div id="chips" class="chips" aria-label="おすすめ検索"></div>
+    </section>
+
+    <section id="notice" class="notice" hidden></section>
+
+    <section id="empty" class="empty panel">
+      <div class="empty-moon">☾</div>
+      <h2>読みたいテーマを選んでください</h2>
+      <p>検索結果から1記事ずつめくれます。スキやマガジン追加はFirefox拡張がnoteへ直接送ります。</p>
+    </section>
+
+    <section id="reader" class="reader" hidden>
+      <article id="card" class="article-card">
+        <div class="cover-wrap"><img id="cover" alt="" hidden><div id="coverFallback" class="cover-fallback">☾</div></div>
+        <div class="article-content">
+          <div class="author-row">
+            <img id="avatar" class="avatar" alt="" hidden>
+            <div><strong id="author"></strong><span id="published"></span></div>
+            <span id="position" class="position"></span>
+          </div>
+          <h2 id="title"></h2>
+          <p id="description"></p>
+          <div class="stats"><span id="likes"></span><span id="comments"></span></div>
+        </div>
+      </article>
+
+      <div class="actions panel">
+        <a id="like" class="action like" href="#">♡ スキ</a>
+        <button id="magazine" class="action magazine">🌙 お気に入りへ</button>
+        <a id="comment" class="action secondary-action" href="#">コメント</a>
+        <button id="follow" class="action secondary-action">フォロー</button>
+        <a id="openNote" class="action secondary-action" target="_blank" rel="noopener">noteで読む ↗</a>
+      </div>
+
+      <div class="pager">
+        <button id="prev" class="secondary">← 前へ</button>
+        <button id="next" class="primary">次へ →</button>
+      </div>
+      <p class="swipe-hint">カードを左右にスワイプしても移動できます。</p>
+    </section>
+  </main>
+  <script src="./app.js" defer></script>
+</body>
+</html>
