@@ -1,6 +1,6 @@
 # NERO Firefox ローカル自動運転
 
-NEROの自動スキと「ネロのお気に入り🌙」への追加は、外部サーバーやGitHub Actionsを使わずFirefox拡張内で実行します。
+NEROの自動スキと「ネロのお気に入り🌙」への追加は、外部実行サーバーやユーザー定義GitHub Actionsを使わずFirefox拡張内で実行します。
 
 ## GitHub Pages
 
@@ -46,6 +46,7 @@ Pages画面または拡張ポップアップの「停止を解除」から明示
 
 ## GitHub / Cloudflare
 
-- GitHub Actions: 使用しない
+- ユーザー定義 `.github/workflows`: なし
+- GitHub Pages内部deployment workflow: Pages公開時のみGitHub側で実行。Publicリポジトリの標準runnerなので課金対象Actions分数は0
 - Cloudflare: 使用しない
 - GitHub Pages: `docs/` を `main` ブランチから静的配信
