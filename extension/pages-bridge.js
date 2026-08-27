@@ -1,7 +1,7 @@
 'use strict';
 
 (function initializePagesBridge() {
-  const VERSION = '0.1.33';
+  const VERSION = '0.1.39';
 
   function publishVersion() {
     document.documentElement.dataset.neroExtensionVersion = VERSION;
@@ -60,6 +60,20 @@
         cancel: 'NERO_BACKFILL_CANCEL'
       };
       return { type: typeByAction[String(request.action || '')] || 'NERO_BACKFILL_STATUS' };
+    }
+  ));
+
+  document.addEventListener('nero-return-likes-control-request', () => relay(
+    'neroReturnLikesControlRequest', 'neroReturnLikesControlResult', 'nero-return-likes-control-result',
+    (request) => {
+      const typeByAction = {
+        status: 'NERO_RETURN_LIKES_STATUS',
+        scan: 'NERO_RETURN_LIKES_SCAN',
+        start: 'NERO_RETURN_LIKES_START',
+        pause: 'NERO_RETURN_LIKES_PAUSE',
+        resume: 'NERO_RETURN_LIKES_RESUME'
+      };
+      return { type: typeByAction[String(request.action || '')] || 'NERO_RETURN_LIKES_STATUS' };
     }
   ));
 

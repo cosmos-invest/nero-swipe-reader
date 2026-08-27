@@ -5,8 +5,9 @@ function assert(value,message){if(!value)throw new Error(message)}
 const root=process.cwd();
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'extension/manifest.json'),'utf8'));
 assert(manifest.name==='NERO Swipe Reader Bridge','unexpected extension name');
-assert(manifest.version==='0.1.33','unexpected extension version');
+assert(manifest.version==='0.1.39','unexpected extension version');
 assert(manifest.permissions.includes('__READER_MATCH__'),'reader match placeholder missing');
+assert(manifest.permissions.includes('https://graphql.note.com/*'),'note GraphQL permission missing');
 assert(manifest.content_scripts[0].js.includes('pages-bridge.js'),'Pages bridge missing');
 assert(manifest.browser_specific_settings.gecko.id==='nero-swipe-reader@local.invalid','extension id is not isolated');
 assert(!manifest.permissions.includes('__READER_ORIGIN__/*'),'legacy origin-only reader permission remains');
@@ -19,10 +20,14 @@ const localAuto=fs.readFileSync(path.join(root,'extension/local-auto.js'),'utf8'
 assert(manifest.permissions.includes('alarms'),'Firefox alarms permission missing');
 assert(manifest.background.scripts.includes('local-auto.js'),'local automation background script missing');
 assert(localAuto.includes("const TARGET_MAGAZINE = 'ネロのお気に入り🌙'"),'local automation magazine target changed');
+assert(localAuto.includes("const RETURN_TARGET_ARTICLE = 'https://note.com/nero_notelover/n/ne4843208abbe'"),'return-like target changed');
+assert(localAuto.includes('returnedCreators: {}'),'persistent creator dedupe missing');
+assert(localAuto.includes('const key = creatorKey(item.urlname)'),'case-safe creator dedupe missing');
 assert(localAuto.includes('const INTERVAL_MINUTES = 5'),'local automation interval changed');
 assert(localAuto.includes('const MAX_MAGAZINE_PER_HOUR = 10'),'local automation hourly cap changed');
 assert(localAuto.includes('const BACKFILL_INTERVAL_MS = 12000'),'backfill pacing changed');
-assert(localAuto.includes("'/v2/creators/' + encodeURIComponent(account) + '/likes?page=' + page"),'liked-history source missing');
+assert(localAuto.includes("const NOTE_GRAPHQL_URL = 'https://graphql.note.com/graphql'"),'liked-history GraphQL source missing');
+assert(localAuto.includes('variables: { urlname: account, first: LIKES_PAGE_SIZE, after: after || null }'),'liked-history pagination missing');
 assert(localAuto.includes('state.likeBlockedUntil = now + LIKE_RETRY_MS'),'like cooldown behavior missing');
 assert(localAuto.includes("'magazine_added_like_rate_limited'"),'rate-limit magazine continuation missing');
 assert(localAuto.includes('history: publicHistory(state)'),'history exposure missing');

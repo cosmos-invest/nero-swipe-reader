@@ -24,6 +24,42 @@
       <div class="account-pill"><span>note</span><strong id="account">確認中…</strong></div>
     </section>
 
+    <section class="comment-priority panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">COMMENT FIRST</p><h2>コメントをくれた人・最新記事</h2></div>
+        <span id="commentPriorityBadge" class="status-badge">未設定</span>
+      </div>
+      <p id="commentPriorityText" class="muted">最近コメントをくれた人を自動で見つけ、1人1件の最新記事を最優先リストにします。</p>
+      <div class="button-row">
+        <button id="commentPriorityRefresh" class="primary">コメント相手を更新</button>
+        <button id="commentPriorityStart" class="secondary" hidden>最優先で遊びに行く</button>
+      </div>
+      <div id="commentPriorityList" class="priority-list"><div class="history-empty">まだ最新記事を取得していません。</div></div>
+      <p class="tiny">一度設定すると、このFirefoxで6時間ごとに差分更新します。対象は直近30日。コメント日時が新しい人から優先し、同じ人は最新記事1件だけです。</p>
+    </section>
+
+    <section class="return-likes panel">
+      <div class="panel-head">
+        <div><p class="eyebrow">SPECIAL THANKS</p><h2>この記事へのスキ返し</h2></div>
+        <span id="returnLikesBadge" class="status-badge">未確認</span>
+      </div>
+      <p id="returnLikesText" class="muted">指定記事にスキやコメントをくれた人を確認し、その人の最新記事へ1人1回だけスキを返します。</p>
+      <div class="backfill-stats">
+        <div><strong id="returnLikesDiscovered">—</strong><span>反応した人</span></div>
+        <div><strong id="returnLikesProcessed">—</strong><span>今回返礼済</span></div>
+        <div><strong id="returnLikesPrevious">—</strong><span>過去返礼済</span></div>
+        <div><strong id="returnLikesRemaining">—</strong><span>残り</span></div>
+      </div>
+      <div class="auto-meter"><div id="returnLikesMeterBar"></div></div>
+      <div class="button-row">
+        <button id="returnLikesScan" class="primary">反応した人を確認</button>
+        <button id="returnLikesStart" class="secondary" hidden>スキ返しを開始</button>
+        <button id="returnLikesPause" class="secondary" hidden>一時停止</button>
+        <button id="returnLikesResume" class="secondary" hidden>再開</button>
+      </div>
+      <p class="tiny"><a href="https://note.com/nero_notelover/n/ne4843208abbe" target="_blank" rel="noopener">対象記事を開く ↗</a>　返礼済みの相手は端末内で記録し、次回以降は重複しません。すでにスキ済みの記事は待たずに次へ進み、新しいスキだけ5分間隔で送ります。</p>
+    </section>
+
     <section class="automation panel">
       <div class="panel-head">
         <div><p class="eyebrow">LOCAL AUTO</p><h2>自動運転</h2></div>
@@ -67,7 +103,7 @@
         <div><p class="eyebrow">HISTORY</p><h2>処理履歴</h2></div>
         <span id="historyCount" class="status-badge">0件</span>
       </div>
-      <p class="muted">自動運転と過去スキ整理の結果を、このFirefox端末内に保存します。</p>
+      <p class="muted">自動運転、過去スキ整理、スキ返しの結果を、このFirefox端末内に保存します。</p>
       <div id="historyList" class="history-list"><div class="history-empty">まだ履歴がありません。</div></div>
     </section>
 

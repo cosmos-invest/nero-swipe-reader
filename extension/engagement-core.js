@@ -65,7 +65,10 @@
       (Array.isArray(article.likes) ? article.likes : []).forEach((row) => add(row, 'like'));
       (Array.isArray(article.comments) ? article.comments : []).forEach((row) => add(row, 'comment'));
     });
-    const ordered = weightedShuffle(Array.from(creators.values()), random);
+    const values = Array.from(creators.values());
+    const commenters = weightedShuffle(values.filter((row) => row.commentCount > 0), random);
+    const likesOnly = weightedShuffle(values.filter((row) => row.commentCount === 0), random);
+    const ordered = commenters.concat(likesOnly);
     return {
       creators: ordered,
       stats: { creatorCount: ordered.length, likeCount, commentCount, score: likeCount + commentCount }

@@ -24,6 +24,7 @@ const browser = {
 };
 let likeCalls = 0;
 let magazineCalls = 0;
+const returnLikeUrls = [];
 let mode = 'auto';
 const candidatePayload = {
   data: { notes: [{ key:'nabc123', name:'note初心者です。はじめまして、日常を書きます', publish_at:new Date().toISOString(), user:{urlname:'writer_one',nickname:'Writer'} }] }
@@ -50,7 +51,10 @@ const context = {
   fetch: async (url) => {
     const u=String(url);
     if (u.includes('/hashtags/')) return { ok:true, json:async()=>candidatePayload };
-    if (u.includes('/creators/nero_owner/likes')) return { ok:true, json:async()=>likedPayload };
+    if (u.includes('graphql.note.com/graphql')) return { ok:true, json:async()=>({data:{noteLikesConnectionByUrlname:{edges:[
+      {cursor:'c1',node:{note:{key:'nlike001',creator:{urlname:'writer_old1'},openContents:{title:'昔スキした記事1'}}}},
+      {cursor:'c2',node:{note:{key:'nlike002',creator:{urlname:'writer_old2'},openContents:{title:'昔スキした記事2'}}}}
+    ],pageInfo:{hasNextPage:false,endCursor:'c2'}}}}) };
     throw new Error('unexpected fetch ' + url);
   }
 };
@@ -62,12 +66,32 @@ context.NeroBackgroundTest = {
   },
   async runDirectArticleLikeMutation() {
     likeCalls += 1;
+    if (mode === 'return') {
+      const articleUrl = String(arguments[0] || '');
+      returnLikeUrls.push(articleUrl);
+      return { ok:true, already:articleUrl.includes('writer_a') };
+    }
     return { ok:false, code:'like_api_rejected', status:429, message:'スキの回数上限です' };
   },
   async runDirectMagazineAddMutation(articleUrl) {
     magazineCalls += 1;
     if (mode === 'backfill') return { ok:true, action:'magazine_add', already:articleUrl.includes('nlike002') };
     return { ok:true, action:'magazine_add', already:false };
+  },
+  async runArticleReactorsApi() {
+    return {
+      ok:true,
+      owner:'nero_owner',
+      creators:[
+        {urlname:'Writer_A',nickname:'A',commented:true,liked:true,lastActionAt:'2026-08-27T01:00:00Z'},
+        {urlname:'writer_b',nickname:'B',commented:false,liked:true,lastActionAt:'2026-08-27T00:00:00Z'},
+        {urlname:'WRITER_DONE',nickname:'Done',commented:true,liked:false,lastActionAt:'2026-08-26T23:00:00Z'}
+      ],
+      stats:{creatorCount:3,commenterCount:2}
+    };
+  },
+  async runCreatorLatestBatchApi(creators) {
+    return {ok:true,items:creators.map(urlname=>({key:`latest_${String(urlname).toLowerCase()}`,name:`Latest ${urlname}`,urlname:String(urlname).toLowerCase(),publishAt:'2026-08-27T02:00:00Z',url:`https://note.com/${String(urlname).toLowerCase()}/n/latest_${String(urlname).toLowerCase()}`}))};
   }
 };
 vm.createContext(context);
@@ -116,6 +140,29 @@ state=t.publicState(storage['nero.localAuto.state.v1']);
 assert.equal(state.enabled,true,'normal auto resumes after backfill');
 assert.ok(state.history.some(x=>x.mode==='backfill'&&x.key==='nlike001'&&x.result==='added'));
 assert.ok(state.history.some(x=>x.mode==='backfill'&&x.key==='nlike002'&&x.result==='already'));
+
+mode='return';
+storage['nero.localAuto.state.v1'].likeBlockedUntil=0;
+storage['nero.localAuto.state.v1'].returnedCreators={WRITER_DONE:{result:'liked',at:Date.now()-1000,key:'old_done'}};
+const returnScanned=await t.scanReturnLikes();
+assert.equal(returnScanned.ok,true,JSON.stringify(returnScanned));
+assert.equal(returnScanned.returnLikes.status,'ready');
+assert.equal(returnScanned.returnLikes.total,2);
+assert.equal(returnScanned.returnLikes.previouslyReturned,1);
+assert.equal(returnScanned.returnLikes.commenterCount,2);
+const returnStarted=await t.startReturnLikes();
+assert.equal(returnStarted.ok,true);
+assert.equal(returnStarted.returnLikes.status,'completed');
+assert.equal(returnStarted.returnLikes.processed,2);
+assert.equal(returnStarted.returnLikes.already,1);
+assert.equal(returnStarted.returnLikes.liked,1);
+assert.equal(returnLikeUrls.length,2,'already-liked creator should skip immediately to the next creator');
+assert.match(returnLikeUrls[0],/writer_a/);
+assert.match(returnLikeUrls[1],/writer_b/);
+const returnRescan=await t.scanReturnLikes();
+assert.equal(returnRescan.returnLikes.total,0,'completed creators must not be queued twice');
+assert.equal(returnRescan.returnLikes.previouslyReturned,3);
+assert.equal(returnLikeUrls.length,2,'rescan must not send duplicate likes');
 
 const now=Date.now();
 const hourlyState={events:[...Array.from({length:10},(_,i)=>({kind:'magazine',mode:'auto',at:now-i*1000})),{kind:'magazine',mode:'backfill',at:now}]};
