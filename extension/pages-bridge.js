@@ -1,7 +1,7 @@
 'use strict';
 
 (function initializePagesBridge() {
-  const VERSION = '0.1.40';
+  const VERSION = '0.1.42';
   const ALLOWED = new Set([
     'P','DIV','BR','H1','H2','H3','H4','STRONG','B','EM','I','U','S',
     'UL','OL','LI','BLOCKQUOTE','A','IMG','FIGURE','FIGCAPTION','HR','CODE','PRE','SPAN'

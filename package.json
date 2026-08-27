@@ -1,7 +1,7 @@
 {
   "name": "nero-swipe-reader",
   "private": true,
-  "version": "0.1.41",
+  "version": "0.1.42",
   "description": "Dedicated NERO Swipe Reader with GitHub Pages and Firefox-local automation",
   "type": "module",
   "scripts": {

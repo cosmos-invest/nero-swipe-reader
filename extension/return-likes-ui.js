@@ -1,21 +1,8 @@
 'use strict';
 
 (function initializeNeroReturnLikesUi() {
-  const VERSION = '0.1.41';
   let latest = null;
   let refreshTimer = 0;
-
-  function publishVersion() {
-    if (document.documentElement.dataset.neroExtensionVersion !== VERSION) {
-      document.documentElement.dataset.neroExtensionVersion = VERSION;
-    }
-    const status = document.getElementById('neroExtensionStatus');
-    if (status && document.documentElement.dataset.neroExtension === 'ready') {
-      status.textContent = '連携中 v' + VERSION;
-      status.title = 'Firefox拡張機能 v' + VERSION + ' と連携中';
-      status.classList.add('connected');
-    }
-  }
 
   function safeUrl(value) {
     try {
@@ -161,7 +148,6 @@
   }
 
   function install() {
-    publishVersion();
     installStyles();
     ensureBox();
     syncButton();
@@ -182,9 +168,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, { once: true });
   else install();
 
-  const versionObserver = new MutationObserver(() => {
-    publishVersion();
-    if (!document.getElementById('neroReturnTargetsV141')) install();
-  });
-  versionObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-nero-extension', 'data-nero-extension-version'] });
 })();
