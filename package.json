@@ -1,13 +1,13 @@
 {
   "name": "nero-swipe-reader",
   "private": true,
-  "version": "0.1.40",
+  "version": "0.1.41",
   "description": "Dedicated NERO Swipe Reader with GitHub Pages and Firefox-local automation",
   "type": "module",
   "scripts": {
-    "check": "npm run materialize && node tests/safety-check.mjs && node tests/local-auto-check.mjs && node tests/pages-check.mjs",
+    "check": "npm run materialize && node tests/safety-check.mjs && node tests/local-auto-check.mjs && node tests/return-likes-v141-check.mjs && node tests/pages-check.mjs",
     "pack:sources": "node scripts/pack-sources.mjs",
-    "check:local-auto": "node --check extension/local-auto.js && node tests/local-auto-check.mjs",
+    "check:local-auto": "node --check extension/local-auto.js && node tests/local-auto-check.mjs && node tests/return-likes-v141-check.mjs",
     "build:extension": "npm run materialize && node scripts/build-extension.mjs",
     "package:extension": "npm run materialize && bash scripts/package-extension.sh",
     "materialize": "node scripts/materialize-sources.mjs"
