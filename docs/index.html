@@ -4,155 +4,132 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <meta name="theme-color" content="#15121b">
+  <meta name="theme-color" content="#120f17">
   <title>NERO Favorite Reader 🌙</title>
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./v144.css">
 </head>
 <body>
-  <main class="shell">
-    <header class="topbar">
-      <a class="brand" href="./"><span class="moon">☾</span><span>NERO Favorite Reader</span></a>
-      <span id="neroExtensionStatus" class="bridge-status">Firefox未接続</span>
-    </header>
+  <div class="app-shell">
+    <aside class="side-nav">
+      <div class="brand"><span class="brand-moon">☾</span><div><strong>NERO</strong><small>Favorite Reader</small></div></div>
+      <nav>
+        <button data-view-link="home" class="nav-item active"><span>⌂</span><b>ホーム</b></button>
+        <button data-view-link="comments" class="nav-item"><span>💬</span><b>コメント</b><em id="navInboxBadge" hidden>0</em></button>
+        <button data-view-link="read" class="nav-item"><span>▤</span><b>読む</b></button>
+        <button data-view-link="return" class="nav-item"><span>♡</span><b>お返し</b><em id="navReturnBadge" hidden>0</em></button>
+        <button data-view-link="manage" class="nav-item"><span>⚙</span><b>管理</b></button>
+      </nav>
+      <div class="side-status"><i id="sideConnectionDot" class="dot"></i><span id="sideConnectionText">Firefox確認中</span></div>
+    </aside>
 
-    <section class="hero">
-      <div>
-        <p class="eyebrow">ネロのお気に入り🌙</p>
-        <h1>いい記事を、静かに拾う。</h1>
-        <p class="lead">Firefoxでnoteへログインして使う、ネロ専用Reader。認証情報はこのページへ保存しません。</p>
-      </div>
-      <div class="account-pill"><span>note</span><strong id="account">確認中…</strong></div>
-    </section>
+    <main class="main">
+      <header class="topbar">
+        <div><p class="eyebrow">NERO FAVORITE READER</p><h1 id="viewTitle">ホーム</h1></div>
+        <button id="diagnose" class="connection-pill"><i id="connectionDot" class="dot"></i><span id="connectionText">Firefox確認中</span></button>
+      </header>
+      <div id="globalNotice" class="notice" hidden></div>
 
-    <section class="comment-priority panel">
-      <div class="panel-head">
-        <div><p class="eyebrow">COMMENT FIRST</p><h2>コメントをくれた人・最新記事</h2></div>
-        <span id="commentPriorityBadge" class="status-badge">未設定</span>
-      </div>
-      <p id="commentPriorityText" class="muted">最近コメントをくれた人を自動で見つけ、1人1件の最新記事を最優先リストにします。</p>
-      <div class="button-row">
-        <button id="commentPriorityRefresh" class="primary">コメント相手を更新</button>
-        <button id="commentPriorityStart" class="secondary" hidden>最優先で遊びに行く</button>
-      </div>
-      <div id="commentPriorityList" class="priority-list"><div class="history-empty">まだ最新記事を取得していません。</div></div>
-      <p class="tiny">一度設定すると、このFirefoxで6時間ごとに差分更新します。対象は直近30日。コメント日時が新しい人から優先し、同じ人は最新記事1件だけです。</p>
-    </section>
-
-    <section class="return-likes panel">
-      <div class="panel-head">
-        <div><p class="eyebrow">SPECIAL THANKS</p><h2>この記事へのスキ返し</h2></div>
-        <span id="returnLikesBadge" class="status-badge">未確認</span>
-      </div>
-      <p id="returnLikesText" class="muted">指定記事にスキやコメントをくれた人を確認し、その人の最新記事へ1人1回だけスキを返します。</p>
-      <div class="backfill-stats">
-        <div><strong id="returnLikesDiscovered">—</strong><span>反応した人</span></div>
-        <div><strong id="returnLikesProcessed">—</strong><span>今回返礼済</span></div>
-        <div><strong id="returnLikesPrevious">—</strong><span>過去返礼済</span></div>
-        <div><strong id="returnLikesRemaining">—</strong><span>残り</span></div>
-      </div>
-      <div class="auto-meter"><div id="returnLikesMeterBar"></div></div>
-      <div class="button-row">
-        <button id="returnLikesScan" class="primary">反応した人を確認</button>
-        <button id="returnLikesStart" class="secondary" hidden>スキ返しを開始</button>
-        <button id="returnLikesPause" class="secondary" hidden>一時停止</button>
-        <button id="returnLikesResume" class="secondary" hidden>再開</button>
-      </div>
-      <p class="tiny"><a href="https://note.com/nero_notelover/n/ne4843208abbe" target="_blank" rel="noopener">対象記事を開く ↗</a>　返礼済みの相手は端末内で記録し、次回以降は重複しません。すでにスキ済みの記事は待たずに次へ進み、新しいスキだけ5分間隔で送ります。</p>
-    </section>
-
-    <section class="automation panel">
-      <div class="panel-head">
-        <div><p class="eyebrow">LOCAL AUTO</p><h2>自動運転</h2></div>
-        <span id="autoBadge" class="status-badge">確認中</span>
-      </div>
-      <p id="autoText" class="muted">Firefox拡張から状態を読み込んでいます。</p>
-      <div class="auto-meter"><div id="autoMeterBar"></div></div>
-      <div class="button-row">
-        <button id="autoToggle" class="primary">自動運転をON</button>
-        <button id="runNow" class="secondary">今すぐ1件</button>
-        <button id="autoResume" class="secondary" hidden>停止を解除</button>
-      </div>
-      <p class="tiny">5分おき。マガジン追加は直近60分で最大10件。スキ制限中もマガジン追加は継続します。</p>
-    </section>
-
-    <section class="backfill panel">
-      <div class="panel-head">
-        <div><p class="eyebrow">ONE-TIME SYNC</p><h2>過去のスキを整理</h2></div>
-        <span id="backfillBadge" class="status-badge">未確認</span>
-      </div>
-      <p id="backfillText" class="muted">過去にスキした記事を全件確認し、「ネロのお気に入り🌙」へ追加します。すでに入っている記事は自動でスキップします。</p>
-      <div class="backfill-stats">
-        <div><strong id="backfillTotal">—</strong><span>対象</span></div>
-        <div><strong id="backfillAdded">—</strong><span>新規追加</span></div>
-        <div><strong id="backfillAlready">—</strong><span>追加済み</span></div>
-        <div><strong id="backfillRemaining">—</strong><span>残り</span></div>
-      </div>
-      <div class="auto-meter"><div id="backfillMeterBar"></div></div>
-      <div class="button-row">
-        <button id="backfillScan" class="primary">過去スキを確認</button>
-        <button id="backfillStart" class="secondary" hidden>同期を開始</button>
-        <button id="backfillPause" class="secondary" hidden>一時停止</button>
-        <button id="backfillResume" class="secondary" hidden>再開</button>
-        <button id="backfillCancel" class="ghost" hidden>整理をやめる</button>
-      </div>
-      <p class="tiny">同期中だけ通常の自動運転を一時停止し、完了後に元のON/OFFへ戻します。登録は12秒以上あけて順番に行い、途中でFirefoxが止まっても続きから再開します。</p>
-    </section>
-
-    <section class="history panel">
-      <div class="panel-head">
-        <div><p class="eyebrow">HISTORY</p><h2>処理履歴</h2></div>
-        <span id="historyCount" class="status-badge">0件</span>
-      </div>
-      <p class="muted">自動運転、過去スキ整理、スキ返しの結果を、このFirefox端末内に保存します。</p>
-      <div id="historyList" class="history-list"><div class="history-empty">まだ履歴がありません。</div></div>
-    </section>
-
-    <section class="search panel">
-      <div class="search-row">
-        <input id="searchInput" type="search" autocomplete="off" placeholder="キーワード / ハッシュタグ">
-        <button id="searchButton" class="primary">探す</button>
-      </div>
-      <div id="chips" class="chips" aria-label="おすすめ検索"></div>
-    </section>
-
-    <section id="notice" class="notice" hidden></section>
-
-    <section id="empty" class="empty panel">
-      <div class="empty-moon">☾</div>
-      <h2>読みたいテーマを選んでください</h2>
-      <p>検索結果から1記事ずつめくれます。スキやマガジン追加はFirefox拡張がnoteへ直接送ります。</p>
-    </section>
-
-    <section id="reader" class="reader" hidden>
-      <article id="card" class="article-card">
-        <div class="cover-wrap"><img id="cover" alt="" hidden><div id="coverFallback" class="cover-fallback">☾</div></div>
-        <div class="article-content">
-          <div class="author-row">
-            <img id="avatar" class="avatar" alt="" hidden>
-            <div><strong id="author"></strong><span id="published"></span></div>
-            <span id="position" class="position"></span>
-          </div>
-          <h2 id="title"></h2>
-          <p id="description"></p>
-          <div class="stats"><span id="likes"></span><span id="comments"></span></div>
+      <section class="view active" data-view="home">
+        <div class="hero panel">
+          <div><p class="eyebrow">WELCOME BACK 🌙</p><h2>今日も、会いに行こう。</h2><p>重い処理は自動で始めません。必要な場所だけ更新します。</p></div>
+          <button id="refreshDashboard" class="primary">状態を更新</button>
         </div>
-      </article>
+        <div class="status-grid">
+          <article class="stat-card"><span>note</span><strong id="homeAccount">確認中…</strong><small id="homeAccountHint">接続状態を確認しています</small></article>
+          <button class="stat-card clickable" data-go="comments" data-comments-tab="inbox"><span>返信待ち</span><strong id="homeInboxCount">0</strong><small>未返信コメント</small></button>
+          <button class="stat-card clickable" data-go="comments" data-comments-tab="partners"><span>コメント相手</span><strong id="homePriorityCount">0</strong><small>最新記事リスト</small></button>
+          <button class="stat-card clickable" data-go="return"><span>スキ返し</span><strong id="homeReturnCount">0</strong><small>残り対象</small></button>
+          <button class="stat-card clickable" data-go="manage"><span>自動運転</span><strong id="homeAutoState">—</strong><small id="homeAutoHint">端末内自動運転</small></button>
+        </div>
+        <div class="quick-grid">
+          <button class="quick panel" data-go="comments" data-comments-tab="inbox"><b>💬 返信待ちを確認</b><span>返せていないコメントだけ</span></button>
+          <button class="quick panel" data-go="read"><b>▤ 記事を読む</b><span>検索・コメント相手からReaderへ</span></button>
+          <button class="quick panel" data-go="return"><b>♡ お返しへ</b><span>1分間隔のスキ返し</span></button>
+          <button class="quick panel" data-go="manage"><b>⚙ 管理</b><span>自動運転・過去スキ・診断</span></button>
+        </div>
+      </section>
 
-      <div class="actions panel">
-        <a id="like" class="action like" href="#">♡ スキ</a>
-        <button id="magazine" class="action magazine">🌙 お気に入りへ</button>
-        <a id="comment" class="action secondary-action" href="#">コメント</a>
-        <button id="follow" class="action secondary-action">フォロー</button>
-        <a id="openNote" class="action secondary-action" target="_blank" rel="noopener">noteで読む ↗</a>
-      </div>
+      <section class="view" data-view="comments">
+        <div class="tabs panel"><button class="active" data-comments-tab-button="inbox">返信待ち <span id="commentsInboxBadge">0</span></button><button data-comments-tab-button="partners">コメントをくれた人 <span id="commentsPartnersBadge">0</span></button></div>
 
-      <div class="pager">
-        <button id="prev" class="secondary">← 前へ</button>
-        <button id="next" class="primary">次へ →</button>
-      </div>
-      <p class="swipe-hint">カードを左右にスワイプしても移動できます。</p>
-    </section>
-  </main>
-  <script src="./app.js" defer></script>
+        <div class="comments-pane active" data-comments-pane="inbox">
+          <div class="panel section-head"><div><p class="eyebrow">REPLY INBOX</p><h2>返信できていないコメント</h2><p>コメントへのスキとは別判定。あなたが返信するまでここに残ります。</p></div><span id="inboxStatusBadge" class="status-badge">未確認</span></div>
+          <div class="toolbar"><button id="inboxRefresh" class="primary">最新情報に更新</button><button id="inboxCancel" class="secondary" hidden>中断</button><span id="inboxUpdated" class="muted">まだ確認していません。</span></div>
+          <div id="inboxProgress" class="progress-box" hidden><div><b id="inboxProgressText">確認中…</b><span id="inboxProgressCount"></span></div><div class="meter"><i id="inboxProgressBar"></i></div></div>
+          <div id="inboxList" class="card-list"><div class="empty-card">端末内の返信待ちを読み込んでいます。</div></div>
+          <button id="inboxMore" class="more" hidden>さらに表示</button>
+        </div>
+
+        <div class="comments-pane" data-comments-pane="partners">
+          <div class="panel section-head"><div><p class="eyebrow">COMMENT FIRST</p><h2>コメントをくれた人・最新記事</h2><p>直近30日のコメント相手をまとめ、1人1件の最新記事へ遊びに行けます。</p></div><span id="priorityStatusBadge" class="status-badge">未確認</span></div>
+          <div class="toolbar"><button id="priorityRefresh" class="primary">コメント相手を更新</button><button id="priorityStart" class="secondary" hidden>最優先で遊びに行く</button><button id="priorityCancel" class="secondary" hidden>中断</button><span id="priorityUpdated" class="muted">まだ取得していません。</span></div>
+          <div id="priorityProgress" class="progress-box" hidden><div><b id="priorityProgressText">確認中…</b><span id="priorityProgressCount"></span></div><div class="meter"><i id="priorityProgressBar"></i></div></div>
+          <div id="priorityList" class="card-list"><div class="empty-card">コメント相手をまだ取得していません。</div></div>
+          <button id="priorityMore" class="more" hidden>さらに表示</button>
+        </div>
+      </section>
+
+      <section class="view" data-view="read">
+        <div class="panel search-panel">
+          <div class="search-row"><input id="searchInput" type="search" autocomplete="off" placeholder="キーワード / ハッシュタグ"><button id="searchButton" class="primary">探す</button></div>
+          <div id="chips" class="chips"></div>
+        </div>
+        <div id="readerEmpty" class="panel reader-empty"><span>☾</span><h2>読みたいテーマを選んでください</h2><p>検索、または「コメントをくれた人」からReaderを開始できます。</p></div>
+        <section id="reader" hidden>
+          <article class="reader-card panel">
+            <div class="cover-wrap"><img id="cover" alt="" hidden><div id="coverFallback" class="cover-fallback">☾</div></div>
+            <div class="reader-copy">
+              <div class="author-row"><img id="avatar" class="avatar" alt="" hidden><div><strong id="author"></strong><small id="published"></small></div><span id="position"></span></div>
+              <h2 id="articleTitle"></h2>
+              <div id="articleBody" class="article-body"></div>
+              <div class="article-stats"><span id="likes"></span><span id="comments"></span></div>
+            </div>
+          </article>
+          <div class="reader-actions panel"><button id="likeButton">♡ スキ</button><button id="favoriteButton">🌙 お気に入りへ</button><button id="commentButton">コメント</button><button id="followButton">フォロー</button><a id="openNote" target="_blank" rel="noopener">noteで読む ↗</a></div>
+          <div class="pager"><button id="prevButton" class="secondary">← 前へ</button><button id="nextButton" class="primary">次へ →</button></div>
+        </section>
+      </section>
+
+      <section class="view" data-view="return">
+        <div class="panel section-head"><div><p class="eyebrow">SPECIAL THANKS</p><h2>この記事へのスキ返し</h2><p id="returnText">対象を更新してから開始します。</p></div><span id="returnBadge" class="status-badge">未確認</span></div>
+        <div class="stats-four panel"><div><strong id="returnDiscovered">0</strong><span>反応した人</span></div><div><strong id="returnProcessed">0</strong><span>今回返礼済</span></div><div><strong id="returnPrevious">0</strong><span>過去返礼済</span></div><div><strong id="returnRemaining">0</strong><span>残り</span></div></div>
+        <div class="meter panel-meter"><i id="returnMeter"></i></div>
+        <div class="toolbar"><button id="returnScan" class="primary">対象記事一覧を更新</button><button id="returnStart" class="secondary" hidden>スキ返しを開始</button><button id="returnPause" class="secondary" hidden>一時停止</button><button id="returnResume" class="secondary" hidden>再開</button></div>
+        <div class="panel"><div class="list-title"><b>返礼する対象記事</b><span id="returnTargetCount">0件</span></div><div id="returnTargets" class="card-list"><div class="empty-card">現在の対象はありません。</div></div><button id="returnMore" class="more" hidden>さらに表示</button></div>
+        <p class="tiny"><a href="https://note.com/nero_notelover/n/ne4843208abbe" target="_blank" rel="noopener">対象記事を開く ↗</a>　返礼済み履歴は保持し、新しいスキは1分以上あけます。</p>
+      </section>
+
+      <section class="view" data-view="manage">
+        <div class="panel section-head"><div><p class="eyebrow">LOCAL AUTO</p><h2>自動運転</h2><p id="autoText">状態を確認しています。</p></div><span id="autoBadge" class="status-badge">確認中</span></div>
+        <div class="meter panel-meter"><i id="autoMeter"></i></div>
+        <div class="toolbar"><button id="autoToggle" class="primary">自動運転をON</button><button id="autoRun" class="secondary">今すぐ1件</button><button id="autoResume" class="secondary" hidden>停止を解除</button></div>
+
+        <div class="panel section-head spaced"><div><p class="eyebrow">ONE-TIME SYNC</p><h2>過去のスキを整理</h2><p id="backfillText">過去にスキした記事を「ネロのお気に入り🌙」へ整理します。</p></div><span id="backfillBadge" class="status-badge">未確認</span></div>
+        <div class="stats-four panel"><div><strong id="backfillTotal">0</strong><span>対象</span></div><div><strong id="backfillAdded">0</strong><span>新規追加</span></div><div><strong id="backfillAlready">0</strong><span>追加済み</span></div><div><strong id="backfillRemaining">0</strong><span>残り</span></div></div>
+        <div class="meter panel-meter"><i id="backfillMeter"></i></div>
+        <div class="toolbar"><button id="backfillScan" class="primary">過去スキを確認</button><button id="backfillStart" class="secondary" hidden>同期を開始</button><button id="backfillPause" class="secondary" hidden>一時停止</button><button id="backfillResume" class="secondary" hidden>再開</button><button id="backfillCancel" class="ghost" hidden>整理をやめる</button></div>
+
+        <div class="panel maintenance"><p class="eyebrow">MAINTENANCE</p><h2>再スキャン・接続診断</h2><p>通常は差分だけ確認します。全件を見直したいときだけ使ってください。</p><div class="toolbar"><button id="fullInboxScan" class="secondary">返信待ちを全件再確認</button><button id="fullPriorityScan" class="secondary">コメント相手を全件再確認</button><button id="diagnoseManage" class="secondary">接続を診断</button></div><div class="diag-grid"><span>Bridge <b id="diagBridge">—</b></span><span>拡張 <b id="diagVersion">—</b></span><span>note <b id="diagNote">—</b></span><span>最終通信 <b id="diagLast">—</b></span></div></div>
+
+        <div class="panel"><div class="list-title"><b>処理履歴</b><span id="historyCount">0件</span></div><div id="historyList" class="card-list"><div class="empty-card">まだ履歴がありません。</div></div></div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav">
+    <button data-view-link="home" class="active"><span>⌂</span><b>ホーム</b></button>
+    <button data-view-link="comments"><span>💬</span><b>コメント</b><em id="bottomInboxBadge" hidden>0</em></button>
+    <button data-view-link="read"><span>▤</span><b>読む</b></button>
+    <button data-view-link="return"><span>♡</span><b>お返し</b><em id="bottomReturnBadge" hidden>0</em></button>
+    <button data-view-link="manage"><span>⚙</span><b>管理</b></button>
+  </nav>
+
+  <div id="composer" class="modal" hidden><div class="composer"><button id="composerClose" class="modal-close">×</button><p id="composerEyebrow" class="eyebrow">REPLY</p><h2 id="composerTitle">返信する</h2><div id="composerContext" class="composer-context"></div><textarea id="composerText" maxlength="500" rows="7"></textarea><div class="toolbar"><button id="composerCancel" class="secondary">キャンセル</button><button id="composerSend" class="primary">送信</button></div></div></div>
+
+  <script src="./app-core-v144.js" defer></script>
+  <script src="./app-comments-v144.js" defer></script>
+  <script src="./app-reader-v144.js" defer></script>
+  <script src="./app-admin-v144.js" defer></script>
+  <script src="./app-init-v144.js" defer></script>
 </body>
 </html>
