@@ -89,10 +89,40 @@
     }
   }
 
+  async function localAutomationRequest(request) {
+    const action = String(request.action || '');
+    const args = request.args && typeof request.args === 'object' ? request.args : {};
+    const autoMap = { enable:'NERO_AUTO_ENABLE', disable:'NERO_AUTO_DISABLE', resume:'NERO_AUTO_RESUME', run:'NERO_AUTO_RUN_NOW' };
+    const backfillMap = { status:'NERO_BACKFILL_STATUS', scan:'NERO_BACKFILL_SCAN', start:'NERO_BACKFILL_START', pause:'NERO_BACKFILL_PAUSE', resume:'NERO_BACKFILL_RESUME', cancel:'NERO_BACKFILL_CANCEL' };
+    const returnMap = { scan:'NERO_RETURN_LIKES_SCAN', start:'NERO_RETURN_LIKES_START', pause:'NERO_RETURN_LIKES_PAUSE', resume:'NERO_RETURN_LIKES_RESUME' };
+    if (action === 'auto_status') return browser.runtime.sendMessage({ type:'NERO_AUTO_STATUS' });
+    if (action === 'auto_control') return browser.runtime.sendMessage({ type:autoMap[String(args.control || '')] || 'NERO_AUTO_STATUS' });
+    if (action === 'backfill_control') return browser.runtime.sendMessage({ type:backfillMap[String(args.control || 'status')] || 'NERO_BACKFILL_STATUS' });
+    if (action === 'return_control') return browser.runtime.sendMessage({ type:returnMap[String(args.control || '')] || 'NERO_RETURN_LIKES_STATUS' });
+    if (action === 'return_status') {
+      const [state, targets] = await Promise.all([
+        browser.runtime.sendMessage({ type:'NERO_RETURN_LIKES_STATUS' }),
+        browser.runtime.sendMessage({ type:'NERO_RETURN_TARGETS_STATUS' }).catch(() => ({ ok:true, targets:[], returnIntervalMinutes:1 }))
+      ]);
+      return { ok:true, state:state && state.state || {}, returnLikes:state && state.returnLikes || {}, targets:Array.isArray(targets && targets.targets) ? targets.targets : [], returnIntervalMinutes:Number(targets && targets.returnIntervalMinutes || 1) };
+    }
+    return null;
+  }
+
+  function isLocalAutomationAction(action) {
+    return ['auto_status','auto_control','backfill_control','return_status','return_control'].includes(String(action || ''));
+  }
+
   document.addEventListener('nero-app-request', () => {
     let request = null;
     try { request = JSON.parse(document.documentElement.dataset.neroAppRequest || ''); } catch (_) {}
     if (!request || !request.requestId || !request.action) return;
+    if (isLocalAutomationAction(request.action)) {
+      localAutomationRequest(request)
+        .then((result) => publishResult(String(request.requestId), result || { ok:false, message:'自動運転の応答がありませんでした。' }))
+        .catch(() => publishResult(String(request.requestId), { ok:false, code:'automation_bridge_failed', message:'自動運転との通信に失敗しました。' }));
+      return;
+    }
     post({ type: 'request', requestId: String(request.requestId), action: String(request.action), args: request.args && typeof request.args === 'object' ? request.args : {} });
   });
 
