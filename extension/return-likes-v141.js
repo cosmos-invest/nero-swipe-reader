@@ -1,7 +1,7 @@
 'use strict';
 
 (function initializeNeroReturnLikesV141() {
-  const VERSION = '0.1.42';
+  const VERSION = '0.1.44';
   const STATE_KEY = 'nero.localAuto.state.v1';
   const RETURN_LIKES_ALARM_NAME = 'nero-return-likes-v1';
   const FAST_INTERVAL_MINUTES = 1;
