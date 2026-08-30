@@ -14,6 +14,7 @@ context.NeroBackgroundTest={
     if(message.action==='account')return{ok:true,urlname:'nero_owner'};
     if(message.action==='creator_articles')return{ok:true,items:[]};
     if(message.action==='creator_latest_batch')return{ok:true,items:[]};
+    if(message.action==='status_batch')return{ok:true,results:[]};
     return{ok:true};
   },
   async runDirectCommentMutation(){return{ok:true};}
@@ -57,4 +58,15 @@ assert.match(commentsUi,/スキ済みも表示/);
 assert.match(commentsUi,/S\.inbox\.filter\(item=>!Boolean\(item&&item\.comment&&item\.comment\.creatorLiked\)\)/);
 assert.match(commentsUi,/localStorage\.setItem\(INBOX_FILTER_KEY/);
 assert.match(commentsUi,/item\.comment\.creatorLiked=true/);
+assert.match(commentsUi,/PRIORITY_FILTER_KEY='nero\.priority\.showLiked\.v1'/);
+assert.match(commentsUi,/saved===null\?false/,'comment-partner liked articles should be hidden by default');
+assert.match(commentsUi,/noteAction:'status_batch'/);
+assert.match(commentsUi,/A\.filteredPriority/);
+assert.match(commentsUi,/A\.startPriorityReader/);
+assert.match(commentsUi,/未スキの最新記事はありません/);
+const init=fs.readFileSync(new URL('../docs/app-init-v144.js',import.meta.url),'utf8');
+assert.match(init,/A\.startPriorityReader\(\)/);
+const reader=fs.readFileSync(new URL('../docs/app-reader-v144.js',import.meta.url),'utf8');
+assert.match(reader,/A\.markPriorityLiked\(row\.url,status\.liked\)/);
+assert.match(reader,/A\.markPriorityLiked\(row\.url,true\)/);
 console.log('app-v144-check-ok');
