@@ -52,4 +52,9 @@ const commentsUi=fs.readFileSync(new URL('../docs/app-comments-v144.js',import.m
 assert.match(commentsUi,/inbox_scan/);
 assert.match(commentsUi,/priority_scan/);
 assert.match(commentsUi,/reply_comment/);
+assert.match(commentsUi,/inboxShowLiked/);
+assert.match(commentsUi,/スキ済みも表示/);
+assert.match(commentsUi,/S\.inbox\.filter\(item=>!Boolean\(item&&item\.comment&&item\.comment\.creatorLiked\)\)/);
+assert.match(commentsUi,/localStorage\.setItem\(INBOX_FILTER_KEY/);
+assert.match(commentsUi,/item\.comment\.creatorLiked=true/);
 console.log('app-v144-check-ok');
