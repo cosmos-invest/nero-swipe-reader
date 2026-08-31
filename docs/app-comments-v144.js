@@ -203,12 +203,12 @@
       list.innerHTML=S.priority.length&&!S.priorityShowLiked?'<div class="empty-card">未スキの最新記事はありません。スキ済みも表示すると確認できます。</div>':'<div class="empty-card">コメント相手の最新記事はまだありません。</div>';
       $('priorityMore').hidden=true;$('priorityStart').hidden=true;return;
     }
-    rows.slice(0,S.priorityVisible).forEach(row=>{
+    rows.slice(0,S.priorityVisible).forEach((row,index)=>{
       const card=document.createElement('article');card.className='priority-card';const top=document.createElement('div');top.className='card-top';
       const copy=document.createElement('div');copy.style.minWidth='0';const title=document.createElement('strong');title.className='card-title';title.textContent=row.name||'無題の記事';
       const meta=document.createElement('span');meta.className='card-meta';meta.textContent=[row.nickname||'@'+row.urlname,A.fmt(row.publishAt,false),row.lastCommentAt?'最終コメント '+A.fmt(row.lastCommentAt):''].filter(Boolean).join(' · ');copy.append(title,meta);
       const b=document.createElement('span');b.className='badge';const liked=A.priorityLiked(row);b.textContent=liked===true?`💬${Number(row.commentCount||0)} · ♥ スキ済み`:`💬${Number(row.commentCount||0)}`;top.append(copy,b);
-      const acts=document.createElement('div');acts.className='card-actions';const read=document.createElement('button');read.textContent='Readerで読む';read.onclick=()=>A.startReader&&A.startReader([row],0);
+      const acts=document.createElement('div');acts.className='card-actions';const read=document.createElement('button');read.textContent='Readerで読む';read.onclick=()=>A.startReader&&A.startReader(rows.slice(),index);
       const open=document.createElement('a');open.href=row.url;open.target='_blank';open.rel='noopener';open.textContent='noteで開く ↗';acts.append(read,open);card.append(top,acts);list.append(card);
     });
     $('priorityMore').hidden=S.priorityVisible>=rows.length;$('priorityStart').hidden=!rows.length;
